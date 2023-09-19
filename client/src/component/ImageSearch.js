@@ -7,48 +7,51 @@ function ImageSearch() {
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    // Fetch images from Unsplash API
+
     fetchImages();
   }, [page, query]);
 
   const fetchImages = () => {
-    const accessKey = 'foW53BDc17GpHshU5wvheO-Af884fYpcgrn_iGEmXN0';
-    const perPage = 10; // Number of images per page
-    const apiUrl = `https://api.unsplash.com/photos/?client_id=${accessKey}&page=${page}&per_page=${perPage}&query=${query}`;
+    fetch(`/api/images?query=${query}&page=1`)
+    .then((response) => response.json())
+    .then((data) => { 
+      if (page === 1) {
 
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        if (page === 1) {
-          // If it's the first page or a new search, replace the existing images with the new ones
-          setImages(data);
-        } else {
-          // Otherwise, append the new images to the existing ones
-          setImages((prevImages) => [...prevImages, ...data]);
-        }
-      })
-      .catch((error) => console.error('Error fetching images:', error));
+        setImages(data);
+      } else {
+       
+        setImages((prevImages) => [...prevImages, ...data]);
+      }
+    })
+    .catch((error) => console.error('Error fetching images:', error));
   };
 
   const searchPhotos = () => {
-    // When the "Search" button is clicked, reset the page to 1
-    setPage(1);
+    fetch(`https://api.unsplash.com/search/photos?page=1&query=${query}&client_id=4UhQL7IdZ55_AGB-WhQQNVlxTwun4XNQI0lXn6L-gqM`)
+    .then(response => response.json())
+    .then((data) => {
+      if (page === 1) {
+        
+       
+        setImages(data.results);
+      } else {
+        
+        setImages((prevImages) => [...prevImages, ...data]);
+      }
+    })
+  
+      
+      
     
-    // Clear existing images
-    setImages([]);
-    
-    // Fetch images with the new query
-    fetchImages();
   };
 
   const loadMoreImages = () => {
-    // Increment the page number to fetch the next page
+    
     setPage((prevPage) => prevPage + 1);
   };
 
   return (
     <div>
-      <h1>Unsplash Images</h1>
       <div className="form">
         <label className="label" htmlFor="query">
           {' '}
@@ -78,7 +81,10 @@ function ImageSearch() {
           />
         ))}
       </div>
-      <button onClick={loadMoreImages}>Load More</button>
+      <div className='d-flex justify-content-center align-items-center mt-5 h1'>
+        <button className='loadbutton' onClick={loadMoreImages}>Load More</button>
+      </div>
+      
     </div>
   );
 }
